@@ -3,57 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>J-Counter Final-Fix</title>
+    <title>J-Counter Ultimate</title>
     <style>
         :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
-        
-        /* 画面の高さ100%を維持しつつ、ツールバーを考慮したpaddingを追加 */
         body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 4px; padding-bottom: env(safe-area-inset-bottom); -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; box-sizing: border-box; }
         
-        .container { max-width: 100%; height: 98vh; display: flex; flex-direction: column; justify-content: space-between; }
+        .container { max-width: 100%; height: 98vh; display: flex; flex-direction: column; }
         
-        /* 上部エリア：少しコンパクトに */
+        /* 上部広告エリア */
+        .ad-top { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 2px; }
+
         .total-area { background: #1a1a1a; padding: 3px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 3px; }
         .drum-container { display: flex; justify-content: center; align-items: center; gap: 2px; }
         .drum-digit { display: flex; flex-direction: row; align-items: center; background: #333; border-radius: 4px; }
-        .drum-val { font-size: 1.4rem; font-weight: bold; width: 22px; text-align: center; }
-        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 28px; height: 32px; font-size: 1.1rem; cursor: pointer; padding: 0; }
+        .drum-val { font-size: 1.3rem; font-weight: bold; width: 22px; text-align: center; }
+        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 26px; height: 30px; font-size: 1rem; cursor: pointer; padding: 0; }
         
-        .summary-area { display: flex; justify-content: space-around; font-size: 0.8rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
+        .summary-area { display: flex; justify-content: space-around; font-size: 0.75rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
         .sum-prob { color: var(--jug-gold); font-weight: bold; }
-        .top-judge { font-size: 0.75rem; color: var(--good-green); font-weight: bold; text-align: center; height: 1rem; }
 
-        /* グリッド：高さを自動調整 */
+        /* グリッド：カードをさらに少し縮小 */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; flex: 1; min-height: 0; }
-        .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+        .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
         
-        .grape { border-top: 3px solid var(--good-green); }
-        .cherry { border-top: 3px solid var(--cherry-orange); }
-        .big { border-top: 3px solid var(--big-red); }
-        .reg { border-top: 3px solid var(--jug-pink); }
-        .ch-big { border-top: 3px dashed var(--big-red); }
-        .ch-reg { border-top: 3px dashed var(--jug-pink); }
-        
-        .label { font-size: 0.65rem; font-weight: bold; color: #ccc; margin-top: 1px; }
-        .count-val { font-size: 1.5rem; font-weight: bold; line-height: 1; }
+        .label { font-size: 0.65rem; font-weight: bold; color: #ccc; }
+        .count-val { font-size: 1.4rem; font-weight: bold; line-height: 1; }
         .prob { color: var(--jug-gold); font-size: 0.7rem; font-weight: bold; }
         
-        /* ボタンの高さを少し削って見切れ防止 */
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 6px 0; border-radius: 4px; font-size: 1.2rem; margin-top: 1px; }
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 5px 0; border-radius: 4px; font-size: 1.2rem; }
         .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.55rem; margin-top: 1px; }
-        
-        .judge-msg { font-size: 0.5rem; color: #555; margin-bottom: 1px; }
-        .good { color: var(--good-green); }
+        .judge-msg { font-size: 0.5rem; color: #555; }
 
-        /* フッター：少し上に持ち上げる */
-        .footer { padding-bottom: 15px; text-align: center; }
-        .btn-reset { background: #cc0000; color: white; border: none; padding: 6px 20px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; }
-        .notes { font-size: 0.5rem; color: #444; margin-top: 3px; }
+        /* フッター：横並びで高さを圧縮 */
+        .footer { margin-top: 4px; padding-bottom: 20px; }
+        .ad-bottom { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 4px; }
+        .footer-btns { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
+        .btn-reset { background: #cc0000; color: white; border: none; padding: 4px 10px; border-radius: 10px; font-size: 0.6rem; }
+        .legal-links { font-size: 0.55rem; color: #666; text-decoration: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="ad-top">スポンサーリンク</div>
+
     <div class="total-area">
         <div class="drum-container">
             <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000,-1)">▼</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000,1)">▲</button></div>
@@ -71,13 +64,17 @@
     <div class="grid" id="counterGrid"></div>
 
     <div class="footer">
-        <button class="btn-reset" onclick="res()">データをリセット</button>
-        <div class="notes">※平均目安。自己責任でお願いします。</div>
+        <div class="ad-bottom">スポンサーリンク</div>
+        <div class="footer-btns">
+            <a href="#" class="legal-links">規約/プライバシー</a>
+            <button class="btn-reset" onclick="res()">リセット</button>
+        </div>
+        <div style="font-size:0.5rem; color:#444; text-align:center; margin-top:2px;">※目安です。自己責任でお願いします。</div>
     </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v13')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v14')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
         labels: ["ブドウ", "チェリー", "単BIG", "単REG", "重BIG", "重REG"],
@@ -85,7 +82,7 @@
     };
 
     function save() { 
-        localStorage.setItem('j-state-v13', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v14', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
@@ -107,7 +104,7 @@
 
     function up(i) { state.counts[i]++; save(); }
     function down(i) { if(state.counts[i] > 0) state.counts[i]--; save(); }
-    function res() { if(confirm("リセットしますか？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
+    function res() { if(confirm("リセット？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
 
     function render() {
         const grid = document.getElementById('counterGrid');
@@ -122,9 +119,9 @@
 
         const topJudge = document.getElementById('total-judge');
         if(state.totalG >= 500 && bonusProb !== "-") {
-            if(bonusProb < 135) topJudge.innerText = "★高設定";
-            else if(bonusProb > 165) topJudge.innerText = "▲低設定";
-            else topJudge.innerText = "●中間";
+            if(bonusProb < 135) topJudge.innerText = "★高";
+            else if(bonusProb > 165) topJudge.innerText = "▲低";
+            else topJudge.innerText = "●中";
         } else { topJudge.innerText = ""; }
 
         state.counts.forEach((v, i) => {
@@ -133,11 +130,10 @@
             card.className = `card ${state.classes[i]}`;
             
             let judgeText = "500G〜";
-            let judgeClass = "judge-msg";
             if(state.totalG >= 500) {
                 judgeText = "-";
-                if(i === 0 && state.totalG/v < 6.0) { judgeText = "良"; judgeClass += " good"; }
-                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "良"; judgeClass += " good"; }
+                if(i === 0 && state.totalG/v < 6.0) { judgeText = "良"; }
+                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "良"; }
             }
 
             card.innerHTML = `
@@ -145,8 +141,8 @@
                 <div class="count-val">${v}</div>
                 <div class="prob">1/${p}</div>
                 <button class="btn-up" onclick="up(${i})">＋</button>
-                <button class="btn-minus" onclick="down(${i})">－1</button>
-                <div class="${judgeClass}">${judgeText}</div>
+                <button class="btn-minus" onclick="down(${i})">－</button>
+                <div class="judge-msg">${judgeText}</div>
             `;
             grid.appendChild(card);
         });
