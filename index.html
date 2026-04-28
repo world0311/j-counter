@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J-Counter Drum-Loop</title>
+    <title>J-Counter Compact-Loop</title>
     <style>
         :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
-        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 5px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; }
+        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 4px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; }
         .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; }
         
-        /* 入力エリアをさらに薄く */
-        .total-area { background: #1a1a1a; padding: 5px; border-radius: 10px; border: 1px solid var(--jug-gold); margin-bottom: 5px; text-align: center; }
-        .drum-container { display: flex; justify-content: center; align-items: center; gap: 3px; }
-        .drum-digit { display: flex; flex-direction: column; align-items: center; }
-        .drum-val { font-size: 1.8rem; font-weight: bold; width: 40px; background: #333; border-radius: 4px; margin: 2px 0; }
-        .btn-arrow { background: #444; border: none; color: white; width: 42px; height: 30px; border-radius: 4px; font-size: 1rem; cursor: pointer; }
+        /* 入力エリアを横長にして高さを節約 */
+        .total-area { background: #1a1a1a; padding: 4px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 4px; }
+        .drum-container { display: flex; justify-content: center; align-items: center; gap: 2px; }
+        .drum-digit { display: flex; flex-direction: row; align-items: center; background: #333; border-radius: 4px; padding: 0 2px; }
+        .drum-val { font-size: 1.5rem; font-weight: bold; width: 25px; text-align: center; }
+        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 30px; height: 35px; font-size: 1.2rem; cursor: pointer; padding: 0; }
         
-        .summary-area { background: #000; padding: 4px; border-radius: 8px; border: 1px solid var(--bonus-blue); display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 5px; }
+        .summary-area { display: flex; justify-content: space-around; font-size: 0.85rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
         .sum-prob { color: var(--jug-gold); font-weight: bold; }
-        .top-judge { font-size: 0.85rem; color: var(--good-green); font-weight: bold; min-height: 1.1rem; margin-top: 2px; }
+        .top-judge { font-size: 0.8rem; color: var(--good-green); font-weight: bold; text-align: center; min-height: 1rem; }
 
-        /* グリッド：隙間を最小限に */
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; flex: 1; }
-        .card { background: #1a1a1a; border-radius: 8px; padding: 5px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
+        /* グリッド：カードの高さを圧縮 */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; flex: 1; }
+        .card { background: #1a1a1a; border-radius: 6px; padding: 4px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: center; }
         
         .grape { border-top: 3px solid var(--good-green); }
         .cherry { border-top: 3px solid var(--cherry-orange); }
@@ -31,18 +31,19 @@
         .ch-big { border-top: 3px dashed var(--big-red); }
         .ch-reg { border-top: 3px dashed var(--jug-pink); }
         
-        .label { font-size: 0.75rem; font-weight: bold; color: #ccc; }
-        .count-val { font-size: 1.8rem; font-weight: bold; line-height: 1; margin: 2px 0; }
-        .prob { color: var(--jug-gold); font-size: 0.8rem; font-weight: bold; }
+        .label { font-size: 0.7rem; font-weight: bold; color: #ccc; }
+        .count-val { font-size: 1.6rem; font-weight: bold; line-height: 1.1; }
+        .prob { color: var(--jug-gold); font-size: 0.75rem; font-weight: bold; }
         
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 10px 0; border-radius: 6px; font-size: 1.4rem; cursor: pointer; }
-        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 2px; border-radius: 4px; font-size: 0.65rem; margin-top: 3px; width: 100%; }
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 8px 0; border-radius: 4px; font-size: 1.3rem; margin-top: 2px; }
+        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.6rem; margin-top: 2px; }
         
-        .judge-msg { font-size: 0.6rem; margin-top: 2px; color: #555; }
+        .judge-msg { font-size: 0.55rem; color: #555; margin-top: 1px; }
         .good { color: var(--good-green); }
 
-        .btn-reset { background: #cc0000; color: white; border: none; padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; margin: 5px auto; display: block; }
-        .notes { font-size: 0.55rem; color: #444; text-align: center; padding-bottom: 5px; }
+        .footer { display: flex; justify-content: space-between; align-items: center; padding: 2px 10px; }
+        .btn-reset { background: #cc0000; color: white; border: none; padding: 4px 12px; border-radius: 15px; font-size: 0.65rem; }
+        .notes { font-size: 0.5rem; color: #444; }
     </style>
 </head>
 <body>
@@ -50,39 +51,40 @@
 <div class="container">
     <div class="total-area">
         <div class="drum-container">
-            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000, 1)">▲</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000, -1)">▼</button></div>
-            <div class="drum-digit"><button class="btn-arrow" onclick="drum(100, 1)">▲</button><div id="d3" class="drum-val">0</div><button class="btn-arrow" onclick="drum(100, -1)">▼</button></div>
-            <div class="drum-digit"><button class="btn-arrow" onclick="drum(10, 1)">▲</button><div id="d2" class="drum-val">0</div><button class="btn-arrow" onclick="drum(10, -1)">▼</button></div>
-            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1, 1)">▲</button><div id="d1" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1, -1)">▼</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000,-1)">▼</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(100,-1)">▼</button><div id="d3" class="drum-val">0</div><button class="btn-arrow" onclick="drum(100,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(10,-1)">▼</button><div id="d2" class="drum-val">0</div><button class="btn-arrow" onclick="drum(10,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1,-1)">▼</button><div id="d1" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1,1)">▲</button></div>
         </div>
         <div class="summary-area">
             <div id="total-bonus-count">合算:0</div>
-            <div id="total-bonus-prob" class="sum-prob">1 / -</div>
+            <div id="total-bonus-prob" class="sum-prob">1/-</div>
+            <div id="total-judge" style="color:var(--good-green); font-weight:bold;"></div>
         </div>
-        <div id="total-judge" class="top-judge"></div>
     </div>
 
     <div class="grid" id="counterGrid"></div>
 
-    <button class="btn-reset" onclick="res()">リセット</button>
-    <div class="notes">※平均値参考。自己責任でお願いします。</div>
+    <div class="footer">
+        <div class="notes">※目安です。自己責任で。</div>
+        <button class="btn-reset" onclick="res()">リセット</button>
+    </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v11')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v12')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
-        labels: ["ブドウ", "チェリー", "単独BIG", "単独REG", "重BIG", "重REG"],
+        labels: ["ブドウ", "チェリー", "単BIG", "単REG", "重BIG", "重REG"],
         classes: ["grape", "cherry", "big", "reg", "ch-big", "ch-reg"]
     };
 
     function save() { 
-        localStorage.setItem('j-state-v11', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v12', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
 
-    // ドラム入力のループ処理（0で下を押すと9になる）
     function drum(unit, dir) {
         let currentDigit = Math.floor(state.totalG / unit) % 10;
         let nextDigit = (currentDigit + dir + 10) % 10;
@@ -115,9 +117,9 @@
 
         const topJudge = document.getElementById('total-judge');
         if(state.totalG >= 500 && bonusProb !== "-") {
-            if(bonusProb < 135) topJudge.innerText = "🔥 高設定期待！";
-            else if(bonusProb > 160) topJudge.innerText = "💀 厳しい状況";
-            else topJudge.innerText = "⚖️ 中間付近";
+            if(bonusProb < 135) topJudge.innerText = "★高設定域";
+            else if(bonusProb > 165) topJudge.innerText = "▲低設定域";
+            else topJudge.innerText = "●中間域";
         } else { topJudge.innerText = ""; }
 
         state.counts.forEach((v, i) => {
@@ -125,13 +127,12 @@
             const card = document.createElement('div');
             card.className = `card ${state.classes[i]}`;
             
-            // 判定ロジック
             let judgeText = "500G〜";
             let judgeClass = "judge-msg";
             if(state.totalG >= 500) {
                 judgeText = "-";
-                if(i === 0 && state.totalG/v < 6.0) { judgeText = "高設定並"; judgeClass += " good"; }
-                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "REG良し"; judgeClass += " good"; }
+                if(i === 0 && state.totalG/v < 6.0) { judgeText = "良"; judgeClass += " good"; }
+                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "良"; judgeClass += " good"; }
             }
 
             card.innerHTML = `
