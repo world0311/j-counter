@@ -3,92 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J-Counter Drum-Edit</title>
+    <title>J-Counter Drum-Loop</title>
     <style>
         :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
-        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 8px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow-x: hidden; }
-        .container { max-width: 100%; margin: 0 auto; }
+        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 5px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; }
+        .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; }
         
-        /* ドラム式入力エリア */
-        .total-area { background: #1a1a1a; padding: 10px; border-radius: 12px; border: 2px solid var(--jug-gold); margin-bottom: 8px; text-align: center; }
-        .drum-container { display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 10px; }
+        /* 入力エリアをさらに薄く */
+        .total-area { background: #1a1a1a; padding: 5px; border-radius: 10px; border: 1px solid var(--jug-gold); margin-bottom: 5px; text-align: center; }
+        .drum-container { display: flex; justify-content: center; align-items: center; gap: 3px; }
         .drum-digit { display: flex; flex-direction: column; align-items: center; }
-        .drum-val { font-size: 2.2rem; font-weight: bold; width: 45px; background: #333; border-radius: 6px; margin: 5px 0; }
-        .btn-arrow { background: #444; border: none; color: white; width: 45px; height: 35px; border-radius: 4px; font-size: 1.2rem; cursor: pointer; }
-        .btn-arrow:active { background: #666; }
-
-        .summary-area { background: #000; padding: 8px; border-radius: 10px; border: 1px solid var(--bonus-blue); display: flex; justify-content: space-around; align-items: center; margin-top: 10px; }
-        .sum-val { font-size: 1.1rem; font-weight: bold; }
-        .sum-prob { color: var(--jug-gold); font-weight: bold; font-size: 0.9rem; }
-
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .card { background: #1a1a1a; border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #333; }
-        .grape { border-top: 4px solid var(--good-green); }
-        .cherry { border-top: 4px solid var(--cherry-orange); }
-        .big { border-top: 4px solid var(--big-red); }
-        .reg { border-top: 4px solid var(--jug-pink); }
-        .ch-big { border-top: 4px dashed var(--big-red); }
-        .ch-reg { border-top: 4px dashed var(--jug-pink); }
+        .drum-val { font-size: 1.8rem; font-weight: bold; width: 40px; background: #333; border-radius: 4px; margin: 2px 0; }
+        .btn-arrow { background: #444; border: none; color: white; width: 42px; height: 30px; border-radius: 4px; font-size: 1rem; cursor: pointer; }
         
-        .label { font-size: 0.8rem; font-weight: bold; color: #ccc; }
-        .count-val { font-size: 2rem; font-weight: bold; margin: 2px 0; }
-        .prob { color: var(--jug-gold); font-size: 0.85rem; font-weight: bold; min-height: 1rem; }
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 12px; border-radius: 8px; font-size: 1.5rem; margin-top: 5px; }
-        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 4px; border-radius: 4px; font-size: 0.7rem; margin-top: 5px; width: 100%; }
+        .summary-area { background: #000; padding: 4px; border-radius: 8px; border: 1px solid var(--bonus-blue); display: flex; justify-content: space-around; font-size: 0.9rem; margin-top: 5px; }
+        .sum-prob { color: var(--jug-gold); font-weight: bold; }
+        .top-judge { font-size: 0.85rem; color: var(--good-green); font-weight: bold; min-height: 1.1rem; margin-top: 2px; }
+
+        /* グリッド：隙間を最小限に */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; flex: 1; }
+        .card { background: #1a1a1a; border-radius: 8px; padding: 5px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
         
-        .judge-msg { font-size: 0.65rem; margin-top: 5px; font-weight: bold; color: #666; }
+        .grape { border-top: 3px solid var(--good-green); }
+        .cherry { border-top: 3px solid var(--cherry-orange); }
+        .big { border-top: 3px solid var(--big-red); }
+        .reg { border-top: 3px solid var(--jug-pink); }
+        .ch-big { border-top: 3px dashed var(--big-red); }
+        .ch-reg { border-top: 3px dashed var(--jug-pink); }
+        
+        .label { font-size: 0.75rem; font-weight: bold; color: #ccc; }
+        .count-val { font-size: 1.8rem; font-weight: bold; line-height: 1; margin: 2px 0; }
+        .prob { color: var(--jug-gold); font-size: 0.8rem; font-weight: bold; }
+        
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 10px 0; border-radius: 6px; font-size: 1.4rem; cursor: pointer; }
+        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 2px; border-radius: 4px; font-size: 0.65rem; margin-top: 3px; width: 100%; }
+        
+        .judge-msg { font-size: 0.6rem; margin-top: 2px; color: #555; }
         .good { color: var(--good-green); }
-        .top-judge { font-size: 0.9rem; color: var(--good-green); font-weight: bold; margin-top: 4px; min-height: 1.2rem; }
-        .btn-reset { background: #cc0000; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; margin-top: 20px; }
-        .notes { font-size: 0.65rem; color: #666; text-align: left; padding: 10px; border-top: 1px solid #222; margin-top: 10px; }
+
+        .btn-reset { background: #cc0000; color: white; border: none; padding: 5px 15px; border-radius: 20px; font-size: 0.7rem; margin: 5px auto; display: block; }
+        .notes { font-size: 0.55rem; color: #444; text-align: center; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="total-area">
-        <div style="font-size:0.8rem; color:var(--jug-gold); margin-bottom:5px;">総回転数</div>
         <div class="drum-container">
             <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000, 1)">▲</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000, -1)">▼</button></div>
             <div class="drum-digit"><button class="btn-arrow" onclick="drum(100, 1)">▲</button><div id="d3" class="drum-val">0</div><button class="btn-arrow" onclick="drum(100, -1)">▼</button></div>
             <div class="drum-digit"><button class="btn-arrow" onclick="drum(10, 1)">▲</button><div id="d2" class="drum-val">0</div><button class="btn-arrow" onclick="drum(10, -1)">▼</button></div>
             <div class="drum-digit"><button class="btn-arrow" onclick="drum(1, 1)">▲</button><div id="d1" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1, -1)">▼</button></div>
         </div>
-        
         <div class="summary-area">
-            <div class="sum-val" id="total-bonus-count">合算:0</div>
-            <div class="sum-prob" id="total-bonus-prob">1 / -</div>
+            <div id="total-bonus-count">合算:0</div>
+            <div id="total-bonus-prob" class="sum-prob">1 / -</div>
         </div>
         <div id="total-judge" class="top-judge"></div>
     </div>
 
     <div class="grid" id="counterGrid"></div>
 
-    <div class="reset-container" style="text-align:center;">
-        <button class="btn-reset" onclick="res()">全リセット</button>
-    </div>
-    <div class="notes">※平均値を参考にした目安です。遊技は自己責任でお願いします。</div>
+    <button class="btn-reset" onclick="res()">リセット</button>
+    <div class="notes">※平均値参考。自己責任でお願いします。</div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v10')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v11')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
-        labels: ["ブドウ", "チェリー", "単独BIG", "単独REG", "チェ重BIG", "チェ重REG"],
+        labels: ["ブドウ", "チェリー", "単独BIG", "単独REG", "重BIG", "重REG"],
         classes: ["grape", "cherry", "big", "reg", "ch-big", "ch-reg"]
     };
 
     function save() { 
-        localStorage.setItem('j-state-v10', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v11', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
 
-    // 矢印ボタンでの操作
+    // ドラム入力のループ処理（0で下を押すと9になる）
     function drum(unit, dir) {
-        state.totalG += (unit * dir);
-        if(state.totalG < 0) state.totalG = 0;
-        if(state.totalG > 9999) state.totalG = 9999;
+        let currentDigit = Math.floor(state.totalG / unit) % 10;
+        let nextDigit = (currentDigit + dir + 10) % 10;
+        state.totalG += (nextDigit - currentDigit) * unit;
         save();
     }
 
@@ -102,7 +100,7 @@
 
     function up(i) { state.counts[i]++; save(); }
     function down(i) { if(state.counts[i] > 0) state.counts[i]--; save(); }
-    function res() { if(confirm("全リセットしますか？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
+    function res() { if(confirm("リセット？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
 
     function render() {
         const grid = document.getElementById('counterGrid');
@@ -113,7 +111,7 @@
         const bonusProb = state.totalG > 0 && bonusTotal > 0 ? (state.totalG / bonusTotal).toFixed(1) : "-";
 
         document.getElementById('total-bonus-count').innerText = "合算:" + bonusTotal;
-        document.getElementById('total-bonus-prob').innerText = bonusProb !== "-" ? "1 / " + bonusProb : "-";
+        document.getElementById('total-bonus-prob').innerText = "1/" + bonusProb;
 
         const topJudge = document.getElementById('total-judge');
         if(state.totalG >= 500 && bonusProb !== "-") {
@@ -126,8 +124,24 @@
             const p = state.totalG > 0 && v > 0 ? (state.totalG / v).toFixed(1) : "-";
             const card = document.createElement('div');
             card.className = `card ${state.classes[i]}`;
-            let judge = state.totalG >= 500 ? (i===0 && (state.totalG/v < 6.0) ? "高設定並" : "-") : "500G〜";
-            card.innerHTML = `<div class="label">${state.labels[i]}</div><div class="count-val">${v}</div><div class="prob">1/${p}</div><button class="btn-up" onclick="up(${i})">＋</button><button class="btn-minus" onclick="down(${i})">－1</button><div class="judge-msg">${judge}</div>`;
+            
+            // 判定ロジック
+            let judgeText = "500G〜";
+            let judgeClass = "judge-msg";
+            if(state.totalG >= 500) {
+                judgeText = "-";
+                if(i === 0 && state.totalG/v < 6.0) { judgeText = "高設定並"; judgeClass += " good"; }
+                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "REG良し"; judgeClass += " good"; }
+            }
+
+            card.innerHTML = `
+                <div class="label">${state.labels[i]}</div>
+                <div class="count-val">${v}</div>
+                <div class="prob">1/${p}</div>
+                <button class="btn-up" onclick="up(${i})">＋</button>
+                <button class="btn-minus" onclick="down(${i})">－1</button>
+                <div class="${judgeClass}">${judgeText}</div>
+            `;
             grid.appendChild(card);
         });
     }
