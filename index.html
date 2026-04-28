@@ -2,104 +2,90 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J-Counter Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>J-Counter Final-Fix</title>
     <style>
         :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
-        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; }
-        .container { max-width: 100%; height: 100vh; display: flex; flex-direction: column; }
-
-        /* ★広告エリア（上部）★ */
-        .ad-top { width: 100%; min-height: 50px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #555; }
-
-        .main-content { flex: 1; padding: 4px; display: flex; flex-direction: column; overflow: hidden; }
         
-        .total-area { background: #1a1a1a; padding: 4px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 4px; }
+        /* 画面の高さ100%を維持しつつ、ツールバーを考慮したpaddingを追加 */
+        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 4px; padding-bottom: env(safe-area-inset-bottom); -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; box-sizing: border-box; }
+        
+        .container { max-width: 100%; height: 98vh; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* 上部エリア：少しコンパクトに */
+        .total-area { background: #1a1a1a; padding: 3px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 3px; }
         .drum-container { display: flex; justify-content: center; align-items: center; gap: 2px; }
         .drum-digit { display: flex; flex-direction: row; align-items: center; background: #333; border-radius: 4px; }
-        .drum-val { font-size: 1.5rem; font-weight: bold; width: 25px; text-align: center; }
-        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 30px; height: 35px; font-size: 1.2rem; cursor: pointer; }
+        .drum-val { font-size: 1.4rem; font-weight: bold; width: 22px; text-align: center; }
+        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 28px; height: 32px; font-size: 1.1rem; cursor: pointer; padding: 0; }
         
-        .summary-area { display: flex; justify-content: space-around; font-size: 0.85rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
+        .summary-area { display: flex; justify-content: space-around; font-size: 0.8rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
         .sum-prob { color: var(--jug-gold); font-weight: bold; }
+        .top-judge { font-size: 0.75rem; color: var(--good-green); font-weight: bold; text-align: center; height: 1rem; }
 
-        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; flex: 1; }
-        .card { background: #1a1a1a; border-radius: 6px; padding: 4px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: center; }
-        .count-val { font-size: 1.6rem; font-weight: bold; line-height: 1.1; }
-        .prob { color: var(--jug-gold); font-size: 0.75rem; font-weight: bold; }
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 8px 0; border-radius: 4px; font-size: 1.3rem; margin-top: 2px; }
-        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.6rem; margin-top: 2px; }
-        .judge-msg { font-size: 0.55rem; color: #555; margin-top: 1px; }
-
-        /* ★広告エリア（下部）★ */
-        .ad-bottom { width: 100%; min-height: 50px; background: #222; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #555; }
-
-        .footer { display: flex; justify-content: space-between; align-items: center; padding: 2px 10px; background: #000; }
-        .btn-reset, .btn-settings { background: #333; color: white; border: none; padding: 4px 12px; border-radius: 15px; font-size: 0.65rem; }
+        /* グリッド：高さを自動調整 */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; flex: 1; min-height: 0; }
+        .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
         
-        #settings-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .grape { border-top: 3px solid var(--good-green); }
+        .cherry { border-top: 3px solid var(--cherry-orange); }
+        .big { border-top: 3px solid var(--big-red); }
+        .reg { border-top: 3px solid var(--jug-pink); }
+        .ch-big { border-top: 3px dashed var(--big-red); }
+        .ch-reg { border-top: 3px dashed var(--jug-pink); }
+        
+        .label { font-size: 0.65rem; font-weight: bold; color: #ccc; margin-top: 1px; }
+        .count-val { font-size: 1.5rem; font-weight: bold; line-height: 1; }
+        .prob { color: var(--jug-gold); font-size: 0.7rem; font-weight: bold; }
+        
+        /* ボタンの高さを少し削って見切れ防止 */
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 6px 0; border-radius: 4px; font-size: 1.2rem; margin-top: 1px; }
+        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.55rem; margin-top: 1px; }
+        
+        .judge-msg { font-size: 0.5rem; color: #555; margin-bottom: 1px; }
+        .good { color: var(--good-green); }
+
+        /* フッター：少し上に持ち上げる */
+        .footer { padding-bottom: 15px; text-align: center; }
+        .btn-reset { background: #cc0000; color: white; border: none; padding: 6px 20px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; }
+        .notes { font-size: 0.5rem; color: #444; margin-top: 3px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="ad-top">
-        スポンサーリンク
-    </div>
-
-    <div class="main-content">
-        <div class="total-area">
-            <div class="drum-container">
-                <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000,-1)">▼</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000,1)">▲</button></div>
-                <div class="drum-digit"><button class="btn-arrow" onclick="drum(100,-1)">▼</button><div id="d3" class="drum-val">0</div><button class="btn-arrow" onclick="drum(100,1)">▲</button></div>
-                <div class="drum-digit"><button class="btn-arrow" onclick="drum(10,-1)">▼</button><div id="d2" class="drum-val">0</div><button class="btn-arrow" onclick="drum(10,1)">▲</button></div>
-                <div class="drum-digit"><button class="btn-arrow" onclick="drum(1,-1)">▼</button><div id="d1" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1,1)">▲</button></div>
-            </div>
-            <div class="summary-area">
-                <div id="total-bonus-count">合算:0</div>
-                <div id="total-bonus-prob" class="sum-prob">1/-</div>
-                <div id="total-judge" style="color:var(--good-green); font-weight:bold;"></div>
-            </div>
+    <div class="total-area">
+        <div class="drum-container">
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1000,-1)">▼</button><div id="d4" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1000,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(100,-1)">▼</button><div id="d3" class="drum-val">0</div><button class="btn-arrow" onclick="drum(100,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(10,-1)">▼</button><div id="d2" class="drum-val">0</div><button class="btn-arrow" onclick="drum(10,1)">▲</button></div>
+            <div class="drum-digit"><button class="btn-arrow" onclick="drum(1,-1)">▼</button><div id="d1" class="drum-val">0</div><button class="btn-arrow" onclick="drum(1,1)">▲</button></div>
         </div>
-
-        <div class="grid" id="counterGrid"></div>
+        <div class="summary-area">
+            <div id="total-bonus-count">合算:0</div>
+            <div id="total-bonus-prob" class="sum-prob">1/-</div>
+            <div id="total-judge" style="color:var(--good-green); font-weight:bold;"></div>
+        </div>
     </div>
 
-    <div class="ad-bottom">
-        スポンサーリンク
-    </div>
+    <div class="grid" id="counterGrid"></div>
 
     <div class="footer">
-        <button class="btn-settings" onclick="toggleSettings()">規約・ポリシー</button>
-        <button class="btn-reset" onclick="res()">リセット</button>
-    </div>
-
-    <div id="settings-overlay">
-        <button style="background:var(--jug-gold); padding:10px; border-radius:5px; border:none; font-weight:bold;" onclick="toggleSettings()">閉じる</button>
-        <div style="font-size:0.8rem; margin-top:20px; color:#ccc;">
-            <h3>プライバシーポリシー</h3>
-            <p>当アプリはLocalStorageを使用します。データはデバイス内保存のみです。</p>
-            <h3>免責事項</h3>
-            <p>本アプリは目安であり、勝利を保証しません。自己責任でご使用ください。</p>
-        </div>
+        <button class="btn-reset" onclick="res()">データをリセット</button>
+        <div class="notes">※平均目安。自己責任でお願いします。</div>
     </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v14')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v13')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
         labels: ["ブドウ", "チェリー", "単BIG", "単REG", "重BIG", "重REG"],
         classes: ["grape", "cherry", "big", "reg", "ch-big", "ch-reg"]
     };
 
-    function toggleSettings() {
-        const el = document.getElementById('settings-overlay');
-        el.style.display = el.style.display === 'block' ? 'none' : 'block';
-    }
-
     function save() { 
-        localStorage.setItem('j-state-v14', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v13', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
@@ -121,7 +107,7 @@
 
     function up(i) { state.counts[i]++; save(); }
     function down(i) { if(state.counts[i] > 0) state.counts[i]--; save(); }
-    function res() { if(confirm("リセット？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
+    function res() { if(confirm("リセットしますか？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
 
     function render() {
         const grid = document.getElementById('counterGrid');
@@ -136,17 +122,32 @@
 
         const topJudge = document.getElementById('total-judge');
         if(state.totalG >= 500 && bonusProb !== "-") {
-            if(bonusProb < 135) topJudge.innerText = "★高設定域";
-            else if(bonusProb > 165) topJudge.innerText = "▲低設定域";
-            else topJudge.innerText = "●中間域";
+            if(bonusProb < 135) topJudge.innerText = "★高設定";
+            else if(bonusProb > 165) topJudge.innerText = "▲低設定";
+            else topJudge.innerText = "●中間";
         } else { topJudge.innerText = ""; }
 
         state.counts.forEach((v, i) => {
             const p = state.totalG > 0 && v > 0 ? (state.totalG / v).toFixed(1) : "-";
             const card = document.createElement('div');
             card.className = `card ${state.classes[i]}`;
-            let judgeText = state.totalG >= 500 ? "-" : "500G〜";
-            card.innerHTML = `<div style="font-size:0.7rem; font-weight:bold; color:#ccc;">${state.labels[i]}</div><div class="count-val">${v}</div><div class="prob">1/${p}</div><button class="btn-up" onclick="up(${i})">＋</button><button class="btn-minus" onclick="down(${i})">－1</button><div class="judge-msg">${judgeText}</div>`;
+            
+            let judgeText = "500G〜";
+            let judgeClass = "judge-msg";
+            if(state.totalG >= 500) {
+                judgeText = "-";
+                if(i === 0 && state.totalG/v < 6.0) { judgeText = "良"; judgeClass += " good"; }
+                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "良"; judgeClass += " good"; }
+            }
+
+            card.innerHTML = `
+                <div class="label">${state.labels[i]}</div>
+                <div class="count-val">${v}</div>
+                <div class="prob">1/${p}</div>
+                <button class="btn-up" onclick="up(${i})">＋</button>
+                <button class="btn-minus" onclick="down(${i})">－1</button>
+                <div class="${judgeClass}">${judgeText}</div>
+            `;
             grid.appendChild(card);
         });
     }
