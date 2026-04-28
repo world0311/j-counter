@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>J-Counter Ultimate</title>
+    <title>J-Counter Visual-Red</title>
     <style>
-        :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
+        :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --cherry-red: #ff0000; --big-red: #d32f2f; --bonus-blue: #00d4ff; }
         body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 4px; padding-bottom: env(safe-area-inset-bottom); -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; box-sizing: border-box; }
         
         .container { max-width: 100%; height: 98vh; display: flex; flex-direction: column; }
-        
-        /* 上部広告エリア */
         .ad-top { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 2px; }
 
         .total-area { background: #1a1a1a; padding: 3px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 3px; }
@@ -22,19 +20,27 @@
         .summary-area { display: flex; justify-content: space-around; font-size: 0.75rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
         .sum-prob { color: var(--jug-gold); font-weight: bold; }
 
-        /* グリッド：カードをさらに少し縮小 */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; flex: 1; min-height: 0; }
-        .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
+        .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1.5px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* 枠の色を緑と赤に指定 */
+        .grape { border: 2px solid var(--good-green) !important; box-shadow: 0 0 5px rgba(0, 255, 0, 0.2); }
+        .cherry { border: 2px solid var(--cherry-red) !important; box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); }
+        
+        /* 上部の線も維持 */
+        .big { border-top: 4px solid var(--big-red); }
+        .reg { border-top: 4px solid var(--jug-pink); }
+        .ch-big { border-top: 4px dashed var(--big-red); }
+        .ch-reg { border-top: 4px dashed var(--jug-pink); }
         
         .label { font-size: 0.65rem; font-weight: bold; color: #ccc; }
         .count-val { font-size: 1.4rem; font-weight: bold; line-height: 1; }
         .prob { color: var(--jug-gold); font-size: 0.7rem; font-weight: bold; }
         
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 5px 0; border-radius: 4px; font-size: 1.2rem; }
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 6px 0; border-radius: 4px; font-size: 1.2rem; }
         .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.55rem; margin-top: 1px; }
         .judge-msg { font-size: 0.5rem; color: #555; }
 
-        /* フッター：横並びで高さを圧縮 */
         .footer { margin-top: 4px; padding-bottom: 20px; }
         .ad-bottom { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 4px; }
         .footer-btns { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
@@ -69,12 +75,11 @@
             <a href="#" class="legal-links">規約/プライバシー</a>
             <button class="btn-reset" onclick="res()">リセット</button>
         </div>
-        <div style="font-size:0.5rem; color:#444; text-align:center; margin-top:2px;">※目安です。自己責任でお願いします。</div>
     </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v14')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v16')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
         labels: ["ブドウ", "チェリー", "単BIG", "単REG", "重BIG", "重REG"],
@@ -82,7 +87,7 @@
     };
 
     function save() { 
-        localStorage.setItem('j-state-v14', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v16', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
