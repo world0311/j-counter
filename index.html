@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>J-Counter Visual-Red</title>
+    <title>J-Counter Pro v21.0</title>
     <style>
-        :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --cherry-red: #ff0000; --big-red: #d32f2f; --bonus-blue: #00d4ff; }
+        :root { 
+            --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; 
+            --cherry-red: #ff0000; --big-red: #d32f2f; --bonus-blue: #00d4ff; 
+        }
         body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 4px; padding-bottom: env(safe-area-inset-bottom); -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow: hidden; box-sizing: border-box; }
         
         .container { max-width: 100%; height: 98vh; display: flex; flex-direction: column; }
-        .ad-top { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 2px; }
+        .ad-area { font-size: 0.6rem; color: #444; text-align: center; height: 14px; }
 
-        .total-area { background: #1a1a1a; padding: 3px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 3px; }
+        .mode-selector { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-bottom: 4px; }
+        .mode-btn { background: #222; border: 1px solid #444; color: #888; padding: 8px 0; border-radius: 4px; font-size: 0.65rem; }
+        .mode-btn.active { background: var(--jug-purple); border-color: var(--jug-gold); color: white; font-weight: bold; }
+
+        .total-area { background: #1a1a1a; padding: 3px; border-radius: 8px; border: 1px solid var(--jug-gold); margin-bottom: 4px; }
         .drum-container { display: flex; justify-content: center; align-items: center; gap: 2px; }
         .drum-digit { display: flex; flex-direction: row; align-items: center; background: #333; border-radius: 4px; }
         .drum-val { font-size: 1.3rem; font-weight: bold; width: 22px; text-align: center; }
-        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 26px; height: 30px; font-size: 1rem; cursor: pointer; padding: 0; }
+        .btn-arrow { background: none; border: none; color: var(--jug-gold); width: 26px; height: 32px; font-size: 1rem; cursor: pointer; padding: 0; }
         
         .summary-area { display: flex; justify-content: space-around; font-size: 0.75rem; margin-top: 2px; border-top: 1px solid #333; padding-top: 2px; }
         .sum-prob { color: var(--jug-gold); font-weight: bold; }
@@ -23,35 +30,46 @@
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3px; flex: 1; min-height: 0; }
         .card { background: #1a1a1a; border-radius: 6px; padding: 2px; text-align: center; border: 1.5px solid #333; display: flex; flex-direction: column; justify-content: space-between; }
         
-        /* 枠の色を緑と赤に指定 */
-        .grape { border: 2px solid var(--good-green) !important; box-shadow: 0 0 5px rgba(0, 255, 0, 0.2); }
-        .cherry { border: 2px solid var(--cherry-red) !important; box-shadow: 0 0 5px rgba(255, 0, 0, 0.2); }
-        
-        /* 上部の線も維持 */
+        .grape { border: 2.5px solid var(--good-green) !important; }
+        .cherry { border: 2.5px solid var(--cherry-red) !important; }
         .big { border-top: 4px solid var(--big-red); }
         .reg { border-top: 4px solid var(--jug-pink); }
         .ch-big { border-top: 4px dashed var(--big-red); }
         .ch-reg { border-top: 4px dashed var(--jug-pink); }
         
         .label { font-size: 0.65rem; font-weight: bold; color: #ccc; }
-        .count-val { font-size: 1.4rem; font-weight: bold; line-height: 1; }
-        .prob { color: var(--jug-gold); font-size: 0.7rem; font-weight: bold; }
+        .count-val { font-size: 1.5rem; font-weight: bold; line-height: 1; }
+        .prob { color: var(--jug-gold); font-size: 0.75rem; font-weight: bold; }
         
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 6px 0; border-radius: 4px; font-size: 1.2rem; }
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 8px 0; border-radius: 4px; font-size: 1.3rem; }
         .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 1px; border-radius: 3px; font-size: 0.55rem; margin-top: 1px; }
-        .judge-msg { font-size: 0.5rem; color: #555; }
+        .judge-msg { font-size: 0.55rem; color: #555; height: 12px; }
 
         .footer { margin-top: 4px; padding-bottom: 20px; }
-        .ad-bottom { font-size: 0.6rem; color: #444; text-align: center; margin-bottom: 4px; }
         .footer-btns { display: flex; justify-content: space-between; align-items: center; padding: 0 5px; }
         .btn-reset { background: #cc0000; color: white; border: none; padding: 4px 10px; border-radius: 10px; font-size: 0.6rem; }
-        .legal-links { font-size: 0.55rem; color: #666; text-decoration: none; }
+        .legal-btn { font-size: 0.55rem; color: #666; background: none; border: none; text-decoration: underline; }
+
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 100; overflow-y: auto; padding: 30px 20px; box-sizing: border-box; font-size: 0.8rem; line-height: 1.6; }
     </style>
 </head>
 <body>
 
+<div id="modal" onclick="this.style.display='none'">
+    <h3 style="color:var(--jug-gold)">プライバシーポリシー / 規約</h3>
+    <p>当サイトでは広告サービス（Googleアドセンス等）を利用しています。ユーザーの興味に応じた広告を表示するためCookieを使用することがあります。データはブラウザのLocalStorageにのみ保存され、外部送信されません。</p>
+    <p style="text-align:center; color:var(--jug-gold)">[ 閉じる ]</p>
+</div>
+
 <div class="container">
-    <div class="ad-top">スポンサーリンク</div>
+    <div class="ad-area">スポンサーリンク</div>
+
+    <div class="mode-selector">
+        <button class="mode-btn active" id="m0" onclick="setMode(0)">マイV</button>
+        <button class="mode-btn" id="m1" onclick="setMode(1)">アイム</button>
+        <button class="mode-btn" id="m2" onclick="setMode(2)">ファン2</button>
+        <button class="mode-btn" id="m3" onclick="setMode(3)">ミスター</button>
+    </div>
 
     <div class="total-area">
         <div class="drum-container">
@@ -70,91 +88,92 @@
     <div class="grid" id="counterGrid"></div>
 
     <div class="footer">
-        <div class="ad-bottom">スポンサーリンク</div>
+        <div class="ad-area" style="margin-bottom:4px">スポンサーリンク</div>
         <div class="footer-btns">
-            <a href="#" class="legal-links">規約/プライバシー</a>
-            <button class="btn-reset" onclick="res()">リセット</button>
+            <button class="legal-btn" onclick="document.getElementById('modal').style.display='block'">規約/プライバシー</button>
+            <button class="btn-reset" onclick="res()">全消去</button>
         </div>
     </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v16')) || {
-        totalG: 0,
+    const CONFIG = [
+        { name: "MyJUG", grape: 5.80, bonus: 135 },
+        { name: "ImJUG", grape: 6.00, bonus: 140 },
+        { name: "Funky", grape: 5.90, bonus: 140 },
+        { name: "MrJUG", grape: 5.88, bonus: 130 }
+    ];
+
+    let state = JSON.parse(localStorage.getItem('j-state-v21')) || {
+        totalG: 0, mode: 3,
         counts: [0, 0, 0, 0, 0, 0], 
-        labels: ["ブドウ", "チェリー", "単BIG", "単REG", "重BIG", "重REG"],
+        labels: ["ブドウ", "チェリー", "単独BIG", "単独REG", "重複BIG", "重複REG"],
         classes: ["grape", "cherry", "big", "reg", "ch-big", "ch-reg"]
     };
 
+    function setMode(m) {
+        state.mode = m;
+        document.querySelectorAll('.mode-btn').forEach((b, i) => b.classList.toggle('active', i === m));
+        save();
+    }
+
     function save() { 
-        localStorage.setItem('j-state-v16', JSON.stringify(state)); 
+        localStorage.setItem('j-state-v21', JSON.stringify(state)); 
         updateDrumDisplay();
         render(); 
     }
 
     function drum(unit, dir) {
-        let currentDigit = Math.floor(state.totalG / unit) % 10;
-        let nextDigit = (currentDigit + dir + 10) % 10;
-        state.totalG += (nextDigit - currentDigit) * unit;
+        let cur = Math.floor(state.totalG / unit) % 10;
+        let nxt = (cur + dir + 10) % 10;
+        state.totalG += (nxt - cur) * unit;
         save();
     }
 
     function updateDrumDisplay() {
-        let val = state.totalG;
-        document.getElementById('d4').innerText = Math.floor(val / 1000 % 10);
-        document.getElementById('d3').innerText = Math.floor(val / 100 % 10);
-        document.getElementById('d2').innerText = Math.floor(val / 10 % 10);
-        document.getElementById('d1').innerText = Math.floor(val % 10);
+        let v = state.totalG;
+        document.getElementById('d4').innerText = Math.floor(v / 1000 % 10);
+        document.getElementById('d3').innerText = Math.floor(v / 100 % 10);
+        document.getElementById('d2').innerText = Math.floor(v / 10 % 10);
+        document.getElementById('d1').innerText = Math.floor(v % 10);
     }
 
     function up(i) { state.counts[i]++; save(); }
     function down(i) { if(state.counts[i] > 0) state.counts[i]--; save(); }
-    function res() { if(confirm("リセット？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
+    function res() { if(confirm("消去しますか？")) { state.totalG = 0; state.counts = [0,0,0,0,0,0]; save(); } }
 
     function render() {
         const grid = document.getElementById('counterGrid');
         grid.innerHTML = '';
-        const bigTotal = state.counts[2] + state.counts[4];
-        const regTotal = state.counts[3] + state.counts[5];
-        const bonusTotal = bigTotal + regTotal;
-        const bonusProb = state.totalG > 0 && bonusTotal > 0 ? (state.totalG / bonusTotal).toFixed(1) : "-";
+        const regT = state.counts[3] + state.counts[5];
+        const bonT = state.counts[2] + state.counts[4] + regT;
+        const bProb = state.totalG > 0 && bonT > 0 ? (state.totalG / bonT).toFixed(1) : "-";
+        const conf = CONFIG[state.mode];
 
-        document.getElementById('total-bonus-count').innerText = "合算:" + bonusTotal;
-        document.getElementById('total-bonus-prob').innerText = "1/" + bonusProb;
+        document.getElementById('total-bonus-count').innerText = "合算:" + bonT;
+        document.getElementById('total-bonus-prob').innerText = "1/" + bProb;
 
-        const topJudge = document.getElementById('total-judge');
-        if(state.totalG >= 500 && bonusProb !== "-") {
-            if(bonusProb < 135) topJudge.innerText = "★高";
-            else if(bonusProb > 165) topJudge.innerText = "▲低";
-            else topJudge.innerText = "●中";
-        } else { topJudge.innerText = ""; }
+        const tj = document.getElementById('total-judge');
+        if(state.totalG >= 500 && bProb !== "-") {
+            tj.innerText = bProb < conf.bonus ? "★高設定域" : bProb > (conf.bonus + 20) ? "▲低設定域" : "●中間域";
+        } else { tj.innerText = ""; }
 
         state.counts.forEach((v, i) => {
             const p = state.totalG > 0 && v > 0 ? (state.totalG / v).toFixed(1) : "-";
             const card = document.createElement('div');
             card.className = `card ${state.classes[i]}`;
-            
-            let judgeText = "500G〜";
+            let jTxt = state.totalG < 500 ? "500G〜" : "-";
             if(state.totalG >= 500) {
-                judgeText = "-";
-                if(i === 0 && state.totalG/v < 6.0) { judgeText = "良"; }
-                if((i === 3 || i === 5) && (state.totalG/regTotal < 300)) { judgeText = "良"; }
+                if(i === 0 && state.totalG/v < conf.grape) jTxt = "良好";
+                if((i === 3 || i === 5) && (state.totalG/regT < 300)) jTxt = "REG強";
             }
-
-            card.innerHTML = `
-                <div class="label">${state.labels[i]}</div>
-                <div class="count-val">${v}</div>
-                <div class="prob">1/${p}</div>
-                <button class="btn-up" onclick="up(${i})">＋</button>
-                <button class="btn-minus" onclick="down(${i})">－</button>
-                <div class="judge-msg">${judgeText}</div>
-            `;
+            card.innerHTML = `<div class="label">${state.labels[i]}</div><div class="count-val">${v}</div><div class="prob">1/${p}</div><button class="btn-up" onclick="up(${i})">＋</button><button class="btn-minus" onclick="down(${i})">－1</button><div class="judge-msg">${jTxt}</div>`;
             grid.appendChild(card);
         });
+        document.querySelectorAll('.mode-btn').forEach((b, i) => b.classList.toggle('active', i === state.mode));
     }
     updateDrumDisplay();
     render();
 </script>
-
 </body>
 </html>
