@@ -2,57 +2,29 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>J-Counter Fit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>J-Counter Smart</title>
     <style>
         :root { --jug-purple: #4b0082; --jug-pink: #ff1493; --jug-gold: #ffd700; --good-green: #00ff00; --big-red: #ff0000; --cherry-orange: #ff8c00; --bonus-blue: #00d4ff; }
         
-        /* 画面全体の設定 */
-        html, body { 
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            background: #000; color: white; font-family: sans-serif;
-            overflow-x: hidden; /* 横ブレ防止 */
-            -webkit-text-size-adjust: 100%; /* iOSの勝手な文字サイズ調整を防止 */
-        }
+        /* 画面全体のスクロールや拡大を抑える */
+        body { font-family: sans-serif; background: #000; color: white; margin: 0; padding: 8px; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overflow-x: hidden; }
+        .container { max-width: 100%; margin: 0 auto; }
         
-        /* 全体を囲むコンテナ */
-        .container { 
-            width: 100%; max-width: 450px; margin: 0 auto;
-            padding: 10px; box-sizing: border-box; /* パディングを含めたサイズ計算 */
-        }
+        /* 回転数エリア：高さを少し抑えてコンパクトに */
+        .total-area { background: #1a1a1a; padding: 10px; border-radius: 12px; border: 2px solid var(--jug-gold); margin-bottom: 8px; text-align: center; }
+        input[type="number"] { background: #333; color: #fff; border: none; font-size: 1.8rem; width: 60%; text-align: center; border-radius: 8px; padding: 5px; font-weight: bold; margin-bottom: 8px; }
+        .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 10px; }
+        .btn-q { background: #444; color: #fff; border: none; padding: 10px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; cursor: pointer; }
         
-        /* 回転数・合算エリア */
-        .total-area { background: #1a1a1a; padding: 12px; border-radius: 12px; border: 2px solid var(--jug-gold); margin-bottom: 10px; text-align: center; }
-        .total-label { font-size: 0.8rem; color: var(--jug-gold); margin-bottom: 4px; }
-        input[type="number"] { background: #333; color: #fff; border: none; font-size: 2rem; width: 90%; text-align: center; border-radius: 8px; padding: 8px; font-weight: bold; margin-bottom: 10px; box-sizing: border-box; }
-        
-        .quick-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
-        .btn-q { background: #444; color: #fff; border: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; font-weight: bold; cursor: pointer; }
-        
-        /* 合算表示 */
-        .summary-area { background: #000; padding: 8px; border-radius: 10px; border: 1px solid var(--bonus-blue); display: flex; justify-content: space-around; align-items: center; margin-bottom: 10px; }
-        .sum-item { text-align: center; }
-        .sum-label { font-size: 0.75rem; color: var(--bonus-blue); }
-        .sum-val { font-size: 1.4rem; font-weight: bold; }
-        .sum-prob { color: var(--jug-gold); font-weight: bold; font-size: 0.85rem; }
-        .top-judge { font-size: 0.9rem; color: var(--good-green); font-weight: bold; min-height: 1rem; }
+        .summary-area { background: #000; padding: 8px; border-radius: 10px; border: 1px solid var(--bonus-blue); display: flex; justify-content: space-around; align-items: center; }
+        .sum-val { font-size: 1.2rem; font-weight: bold; }
+        .sum-prob { color: var(--jug-gold); font-weight: bold; font-size: 0.9rem; }
 
-        /* カウンターグリッド：ここが重要 */
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); /* 2列固定 */
-            gap: 8px; /* カード間の隙間 */
-            width: 100%;
-        }
+        /* グリッド：横幅いっぱいに収まるよう調整 */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; }
+        .card { background: #1a1a1a; border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #333; box-sizing: border-box; }
         
-        .card { 
-            background: #1a1a1a; border-radius: 10px; padding: 10px; 
-            text-align: center; border: 1px solid #333; 
-            box-sizing: border-box; /* パディングを含めた幅計算 */
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        
-        /* 役ごとの色分け */
         .grape { border-top: 4px solid var(--good-green); }
         .cherry { border-top: 4px solid var(--cherry-orange); }
         .big { border-top: 4px solid var(--big-red); }
@@ -61,43 +33,36 @@
         .ch-reg { border-top: 4px dashed var(--jug-pink); }
         
         .label { font-size: 0.8rem; font-weight: bold; color: #ccc; }
-        .count-val { font-size: 2.2rem; font-weight: bold; margin: 2px 0; line-height: 1; }
+        .count-val { font-size: 2rem; font-weight: bold; margin: 2px 0; line-height: 1.2; }
         .prob { color: var(--jug-gold); font-size: 0.85rem; font-weight: bold; min-height: 1rem; }
         
-        /* ボタン：押しやすさとサイズの両立 */
-        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 15px; border-radius: 8px; font-size: 1.6rem; cursor: pointer; margin-top: 5px; }
-        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 5px; border-radius: 4px; font-size: 0.7rem; margin-top: 8px; width: 100%; cursor: pointer; }
+        /* ボタンサイズをスマホに最適化 */
+        .btn-up { background: #333; color: white; width: 100%; border: 1px solid #555; padding: 12px; border-radius: 8px; font-size: 1.5rem; cursor: pointer; margin-top: 5px; }
+        .btn-minus { background: none; color: #ff4444; border: 1px solid #444; padding: 4px; border-radius: 4px; font-size: 0.7rem; margin-top: 5px; width: 100%; }
         
-        .judge-msg { font-size: 0.7rem; margin-top: 5px; font-weight: bold; color: #666; min-height: 1rem; }
+        .judge-msg { font-size: 0.65rem; margin-top: 5px; font-weight: bold; color: #666; }
         .good { color: var(--good-green); }
         .bad { color: #ff4444; }
+        .top-judge { font-size: 0.9rem; color: var(--good-green); font-weight: bold; margin-top: 4px; }
 
-        .reset-container { margin-top: 20px; padding: 10px; text-align: center; }
-        .btn-reset { background: #cc0000; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-weight: bold; font-size: 0.8rem; }
-        .notes { margin: 15px 10px; font-size: 0.65rem; color: #555; text-align: left; line-height: 1.4; border-top: 1px solid #222; padding-top: 8px; }
+        .reset-container { margin-top: 20px; text-align: center; padding-bottom: 20px; }
+        .btn-reset { background: #cc0000; color: white; border: none; padding: 10px 20px; border-radius: 50px; font-size: 0.8rem; }
+        .notes { font-size: 0.65rem; color: #666; text-align: left; padding: 10px; border-top: 1px solid #222; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="total-area">
-        <div class="total-label">総回転数</div>
         <input type="number" id="totalDisplay" value="0" oninput="updateFromInput()" inputmode="numeric">
         <div class="quick-btns">
             <button class="btn-q" onclick="addG(1)">+1</button>
             <button class="btn-q" onclick="addG(10)">+10</button>
             <button class="btn-q" onclick="addG(100)">+100</button>
         </div>
-        
         <div class="summary-area">
-            <div class="sum-item">
-                <div class="sum-label">BIG+REG</div>
-                <div id="total-bonus-count" class="sum-val">0</div>
-            </div>
-            <div class="sum-item">
-                <div class="sum-label">合算確率</div>
-                <div id="total-bonus-prob" class="sum-prob">-</div>
-            </div>
+            <div class="sum-val" id="total-bonus-count">0</div>
+            <div class="sum-prob" id="total-bonus-prob">-</div>
         </div>
         <div id="total-judge" class="top-judge"></div>
     </div>
@@ -105,32 +70,27 @@
     <div class="grid" id="counterGrid"></div>
 
     <div class="reset-container">
-        <button class="btn-reset" onclick="res()">データを全リセット</button>
+        <button class="btn-reset" onclick="res()">全リセット</button>
     </div>
-
     <div class="notes">
-        ※本アプリはシリーズ全体の平均値を参考にしています。解析値は機種により異なります。遊技の最終判断は自己責任でお願いします。
+        ※シリーズ全体の平均値を参考にした目安です。遊技は自己責任でお願いします。
     </div>
 </div>
 
 <script>
-    let state = JSON.parse(localStorage.getItem('j-state-v10')) || {
+    let state = JSON.parse(localStorage.getItem('j-state-v9')) || {
         totalG: 0,
         counts: [0, 0, 0, 0, 0, 0], 
         labels: ["ブドウ", "チェリー", "単独BIG", "単独REG", "チェ重BIG", "チェ重REG"],
         classes: ["grape", "cherry", "big", "reg", "ch-big", "ch-reg"]
     };
 
-    function save() {
-        localStorage.setItem('j-state-v10', JSON.stringify(state));
-        render();
-    }
-
+    function save() { localStorage.setItem('j-state-v9', JSON.stringify(state)); render(); }
     function addG(val) { state.totalG += val; save(); }
     function updateFromInput() {
         const val = document.getElementById('totalDisplay').value;
         state.totalG = val === "" ? 0 : parseInt(val);
-        localStorage.setItem('j-state-v10', JSON.stringify(state));
+        localStorage.setItem('j-state-v9', JSON.stringify(state));
         render();
     }
     function up(i) { state.counts[i]++; save(); }
@@ -147,15 +107,14 @@
         const bonusTotal = bigTotal + regTotal;
         const bonusProb = state.totalG > 0 && bonusTotal > 0 ? (state.totalG / bonusTotal).toFixed(1) : "-";
 
-        document.getElementById('total-bonus-count').innerText = bonusTotal;
+        document.getElementById('total-bonus-count').innerText = "合算:" + bonusTotal;
         document.getElementById('total-bonus-prob').innerText = bonusProb !== "-" ? "1 / " + bonusProb : "-";
 
         const topJudge = document.getElementById('total-judge');
         if(state.totalG >= 500 && bonusProb !== "-") {
-            if(bonusProb < 125) topJudge.innerText = "🔥 ぶっちぎり設定6超！";
-            else if(bonusProb < 140) topJudge.innerText = "✨ 高設定濃厚（5-6並）";
-            else if(bonusProb > 165) topJudge.innerText = "💀 低設定の可能性高";
-            else topJudge.innerText = "⚖️ 中間設定付近";
+            if(bonusProb < 135) topJudge.innerText = "🔥 高設定期待！";
+            else if(bonusProb > 160) topJudge.innerText = "💀 厳しい状況";
+            else topJudge.innerText = "⚖️ 中間付近";
         } else { topJudge.innerText = ""; }
 
         state.counts.forEach((v, i) => {
@@ -165,30 +124,23 @@
             
             let judge = "-";
             let judgeClass = "judge-msg";
-            
             if(state.totalG >= 500) {
-                if(i === 0) { 
+                if(i === 0) {
                     const prob = state.totalG / v;
-                    if(prob < 5.8) { judge = "設定6並！"; judgeClass += " good"; }
+                    if(prob < 6.0) { judge = "高設定並"; judgeClass += " good"; }
                     else if(prob > 6.2) { judge = "低設定域"; judgeClass += " bad"; }
-                } else if(i === 2 || i === 4) {
-                    const bProb = state.totalG / bigTotal;
-                    if(bProb < 230) { judge = "BIG強(6超)"; judgeClass += " good"; }
-                    else if(bProb < 255) { judge = "設定4-6並"; judgeClass += " good"; }
-                } else if(i === 3 || i === 5) {
+                } else if(i === 3 || i === 5) { // REG
                     const rProb = state.totalG / regTotal;
-                    if(rProb < 260) { judge = "REG神(6超)"; judgeClass += " good"; }
-                    else if(rProb < 320) { judge = "設定5-6期待"; judgeClass += " good"; }
-                    else if(rProb > 400) { judge = "低設定域"; judgeClass += " bad"; }
+                    if(rProb < 300) { judge = "REG良し"; judgeClass += " good"; }
                 }
             } else { judge = "500G〜判定"; }
 
             card.innerHTML = `
                 <div class="label">${state.labels[i]}</div>
                 <div class="count-val">${v}</div>
-                <div class="prob">1 / ${p}</div>
+                <div class="prob">1/${p}</div>
                 <button class="btn-up" onclick="up(${i})">＋</button>
-                <button class="btn-minus" onclick="down(${i})">－ 1</button>
+                <button class="btn-minus" onclick="down(${i})">－1</button>
                 <div class="${judgeClass}">${judge}</div>
             `;
             grid.appendChild(card);
